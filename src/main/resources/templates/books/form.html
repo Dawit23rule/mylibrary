@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create/Edit Book</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #2980b9;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+        }
+
+        header .logo i {
+            margin-right: 10px;
+            font-size: 30px;
+        }
+
+        header nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+
+        header nav a:hover {
+            color: #f39c12;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        button {
+            background-color: #2980b9;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-top: 25px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #3498db;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #2980b9;
+            font-size: 16px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            background-color: #2980b9;
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            margin-top: 50px;
+        }
+
+        .form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+textarea {
+    resize: vertical;
+}
+
+        /* Modal popup styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 {
+            color: #c0392b;
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .modal-content a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2980b9;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .modal-content a:hover {
+            background-color: #21618c;
+        }
+
+        .modal.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <i class="fas fa-book"></i>
+        <span>MyLibrary</span>
+    </div>
+    <nav>
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/authors}">Authors</a>
+        <a th:href="@{/books}">Books</a>
+    </nav>
+</header>
+
+<!-- Modal shown only when no authors exist -->
+<div th:if="${#lists.isEmpty(authors)}" class="modal show">
+    <div class="modal-content">
+        <h2>No Authors Found</h2>
+        <p>You must create at least one Author before adding a Book.</p>
+        <a th:href="@{/authors/new}"><i class="fas fa-user-plus"></i> Go to Authors Page</a>
+    </div>
+</div>
+
+<div class="container" th:if="${!#lists.isEmpty(authors)}">
+    <h1 th:text="${book.id == null} ? 'Create Book' : 'Edit Book'"></h1>
+
+    <form th:action="@{${book.id == null} ? '/books' : '/books/' + ${book.id}}"
+          th:object="${book}" method="post">
+
+        <label for="title">Title:</label>
+        <input type="text" th:field="*{title}" id="title" required />
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="author">Author:</label>
+                <select th:field="*{author}" id="author" required>
+                    <option value="" disabled>Select an Author</option>
+                    <option th:each="author : ${authors}"
+                            th:value="${author.id}"
+                            th:text="${author.name}">
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="publicationDate">Publication Date:</label>
+                <input type="date" th:field="*{publicationDate}" id="publicationDate" required />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="genre">Genre:</label>
+                <select th:field="*{genre}" id="genre" required>
+                    <option value="FICTION">Fiction</option>
+                    <option value="NON_FICTION">Non-Fiction</option>
+                    <option value="MYSTERY">Mystery</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="pageCount">Page Count:</label>
+                <input type="number" th:field="*{pageCount}" id="pageCount" required />
+            </div>
+            <div class="form-group">
+                <label for="customerRatings">Customer Ratings (0–5):</label>
+                <input type="number" th:field="*{customerRatings}" id="customerRatings" min="0" max="5" step="0.1" required />
+            </div>
+        </div>
+
+        <label for="description">Description:</label>
+        <textarea th:field="*{description}" id="description" required></textarea>
+
+        <button type="submit"><i class="fas fa-save"></i> Save</button>
+    </form>
+
+    <a class="back-link" th:href="@{/books}"><i class="fas fa-arrow-left"></i> Back to Books List</a>
+</div>
+
+<footer>
+    <p>&copy; 2025 Spring Boot Homework Project | All Rights Reserved</p>
+</footer>
+
+</body>
+</html>
