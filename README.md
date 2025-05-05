@@ -1,5 +1,7 @@
 # Spring Boot Homework Assignment
 
+![preview](https://raw.githubusercontent.com/Dawit23rule/mylibrary/refs/heads/main/static/ezgif-7cc7e974da402f.gif)
+
 ## Purpose
 
 This web application is a simple Spring Boot application that manages authors and their books. The goal of the project is to practice using Spring Boot, including Spring Data JPA, Thymeleaf, form validation, and running the application on a custom port.
